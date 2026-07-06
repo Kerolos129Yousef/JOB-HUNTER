@@ -1,21 +1,26 @@
-SKILLS = {
-    "python": 15,
-    "docker": 20,
-    "kubernetes": 25,
-    "k8s": 25,
-    "terraform": 20,
-    "aws": 20,
-    "amazon web services": 20,
-    "linux": 15,
-    "git": 10,
-    "github actions": 15,
-    "ci/cd": 15,
-    "jenkins": 15,
-    "ansible": 20,
-    "helm": 15,
-    "prometheus": 15,
-    "grafana": 15,
-    "nginx": 10,
-    "postgresql": 10,
-    "redis": 10,
-}
+from app.matcher.models import ScoreResult
+from app.matcher.rules.base import BaseRule
+
+
+class SkillsRule(BaseRule):
+
+    type = "skill"
+
+    rules = {
+        "python": 15,
+        "docker": 20,
+        "kubernetes": 25,
+        "terraform": 20,
+        "aws": 20,
+        "linux": 15,
+        "git": 10,
+        "ci/cd": 15,
+        "grafana": 15,
+    }
+
+    # def apply(
+    #     self,
+    #     text: str,
+    #     result: ScoreResult,
+    # ):
+    #     self.match_keywords(text, result)

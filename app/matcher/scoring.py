@@ -1,16 +1,26 @@
+from app.matcher.preferences import load_preferences
+from app.matcher.preferences.base import BasePreference
 from app.schemas.job import JobSchema
 
-from app.matcher.rules.skills import SKILLS
-from app.matcher.rules.titles import TITLES
-from app.matcher.rules.locations import LOCATIONS
-from app.matcher.rules.seniority import SENIORITY
-from app.matcher.rules.penalties import PENALTIES
-from app.matcher.models import ScoreMatch, ScoreResult
-
+from app.matcher.models import ScoreResult
+from app.matcher.rules import load_rules
+from app.matcher.rules.base import BaseRule
+from app.matcher.bonuses.base import BaseBonus
+from app.matcher.bonuses import load_bonuses
+from app.matcher.bonuses.base import BaseBonus
 
 class JobScorer:
 
-    def score(self, job: JobSchema) -> ScoreResult:
+    def __init__(self):
+        load_rules()
+        load_bonuses()
+        load_preferences()
+
+        
+
+        self.rules = BaseRule.registry
+
+    def score(self, job: JobSchema):
 
         text = f"""
         {job.title}
@@ -18,36 +28,21 @@ class JobScorer:
         {job.description or ""}
         """.lower()
 
-        matches = []
+        result = ScoreResult()
 
-        matches.extend(self._apply_rules(text, SKILLS))
-        matches.extend(self._apply_rules(text, TITLES))
-        matches.extend(self._apply_rules(text, LOCATIONS))
-        matches.extend(self._apply_rules(text, SENIORITY))
-        matches.extend(self._apply_rules(text, PENALTIES))
+        for rule in self.rules:
+            rule.apply(text, result)
 
-        score = sum(match.weight for match in matches)
 
-        return ScoreResult(
-            score=max(score, 0),
-            matches=matches,
-        )
+        for bonus in BaseBonus.registry:
+            bonus.apply(result)
 
-    @staticmethod
-    def _apply_rules(
-        text: str,
-        rules: dict[str, int],
-    ) -> list[ScoreMatch]:
+        for preference in BasePreference.registry:
+            preference.apply(job, result)
 
-        matches = []
 
-        for keyword, weight in rules.items():
-            if keyword in text:
-                matches.append(
-                    ScoreMatch(
-                        keyword=keyword,
-                        weight=weight,
-                    )
-                )
+        result.score = max(result.score, 0)
 
-        return matches
+
+        return result
+    
