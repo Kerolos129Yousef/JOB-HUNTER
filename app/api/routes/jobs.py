@@ -9,6 +9,7 @@ from app.schemas.job_response import (
     JobPageResponse,
 )
 from fastapi import Query
+from app.schemas.job_filter import JobFilter
 router = APIRouter(
     prefix="/jobs",
     tags=["Jobs"],
@@ -25,24 +26,12 @@ def get_db():
 
 @router.get("/", response_model=JobPageResponse)
 def get_jobs(
-    page: int = Query(1, ge=1),
-    size: int = Query(20, ge=1, le=100),
-    q: str | None = Query(None),
-    company: str | None = Query(None),
-    location: str | None = Query(None),
-    source: str | None = Query(None),
+    filters: JobFilter = Depends(),
     db: Session = Depends(get_db),
 ):
     service = JobService(db)
 
-    return service.get_jobs(
-        page=page,
-        size=size,
-        q=q,
-        company=company,
-        location=location,
-        source=source,
-    )
+    return service.get_jobs(filters)
 
 
 
