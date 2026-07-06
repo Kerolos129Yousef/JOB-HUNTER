@@ -1,0 +1,26 @@
+[
+    {
+        "board": "stripe",
+        "company": "Stripe",
+        "enabled": true,
+        "priority": 1
+    },
+    {
+        "board": "mongodb",
+        "company": "MongoDB",
+        "enabled": true,
+        "priority": 1
+    },
+    {
+        "board": "cloudflare",
+        "company": "Cloudflare",
+        "enabled": true,
+        "priority": 2
+    },
+    {
+        "board": "datadog",
+        "company": "Datadog",
+        "enabled": true,
+        "priority": 2
+    }
+]

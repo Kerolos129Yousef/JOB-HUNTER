@@ -1,0 +1,8 @@
+[
+    {
+        "board": "openai",
+        "company": "OpenAI",
+        "enabled": true,
+        "priority": 1
+    }
+]
