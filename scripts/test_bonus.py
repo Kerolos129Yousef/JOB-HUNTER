@@ -16,6 +16,7 @@ job = JobSchema(
 result = JobScorer().score(job)
 
 print(result.score)
+print(result.breakdown)
 
 for match in result.matches:
     print(match)

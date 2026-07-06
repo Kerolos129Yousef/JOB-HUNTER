@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from pydantic import PrivateAttr
 from sqlalchemy import values
+from collections import defaultdict
+from pydantic import Field
 
 class ScoreMatch(BaseModel):
     type: str
@@ -17,6 +19,8 @@ class ScoreResult(BaseModel):
 
     # internal cache
     _groups: dict[str, ScoreMatch] = PrivateAttr(default_factory=dict)
+
+    breakdown: dict[str, int] = Field(default_factory=lambda: defaultdict(int))
 
     def add(
         self,
@@ -37,6 +41,7 @@ class ScoreResult(BaseModel):
         if group is None:
             self.matches.append(match)
             self.score += weight
+            self._update_breakdown(type, weight)
             return
 
         # أول مرة يظهر فيها الـ Group
@@ -44,6 +49,7 @@ class ScoreResult(BaseModel):
             self._groups[group] = match
             self.matches.append(match)
             self.score += weight
+            self._update_breakdown(type, weight)
             return
 
         # موجود بالفعل
@@ -53,8 +59,8 @@ class ScoreResult(BaseModel):
         if weight <= current.weight:
             return
 
-        # لو الوزن أكبر نستبدله
         self.score -= current.weight
+        self._update_breakdown(current.type, -current.weight)
 
         self.matches.remove(current)
 
@@ -63,6 +69,11 @@ class ScoreResult(BaseModel):
         self._groups[group] = match
 
         self.score += weight
+        self._update_breakdown(type, weight)
+
+    def _update_breakdown(self, key: str, delta: int):
+        self.breakdown[key] = self.breakdown.get(key, 0) + delta
+    
 
     def has(self, value: str) -> bool:
         return any(match.value == value for match in self.matches)
