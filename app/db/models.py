@@ -23,12 +23,18 @@ class Job(Base):
 
     source: Mapped[str]
 
-    score: Mapped[float] = mapped_column(default=0)
+    raw_score: Mapped[float] = mapped_column(default=0)
 
-    
+    score: Mapped[int] = mapped_column(default=0)
+
+    score_breakdown: Mapped[dict[str, int] | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+
     score_details: Mapped[list[dict[str, Any]] | None] = mapped_column(
-    JSON,
-    nullable=True,
+        JSON,
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)

@@ -14,13 +14,15 @@ class ScoreMatch(BaseModel):
 
 class ScoreResult(BaseModel):
     score: float = 0
-
+    raw_score: float = 0
     matches: list[ScoreMatch] = Field(default_factory=list)
 
     # internal cache
     _groups: dict[str, ScoreMatch] = PrivateAttr(default_factory=dict)
 
     breakdown: dict[str, int] = Field(default_factory=lambda: defaultdict(int))
+
+    
 
     def add(
         self,

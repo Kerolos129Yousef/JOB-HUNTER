@@ -31,11 +31,12 @@ async def main():
             for job in jobs:
                 score_result = scorer.score(job)
 
+                job.raw_score = score_result.raw_score
                 job.score = score_result.score
-                job.score_details = [match.dict() for match in score_result.matches]
+                job.score_breakdown = dict(score_result.breakdown)
                 job.score_details = [
-                        match.model_dump()
-                        for match in score_result.matches
+                    match.model_dump()
+                    for match in score_result.matches
                 ]
                 _, is_created = repo.upsert(job)
 

@@ -30,7 +30,9 @@ class JobRepository:
             existing.location = job.location
             existing.description = job.description
             existing.source = job.source
+            existing.raw_score = job.raw_score
             existing.score = job.score
+            existing.score_breakdown = job.score_breakdown
             existing.score_details = job.score_details
 
             self.db.commit()
@@ -45,7 +47,9 @@ class JobRepository:
             description=job.description,
             url=job.url,
             source=job.source,
+            raw_score=job.raw_score,
             score=job.score,
+            score_breakdown=job.score_breakdown,
             score_details=job.score_details,
         )
 

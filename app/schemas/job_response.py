@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any
 
-from alembic.environment import Any
 from pydantic import BaseModel, ConfigDict
 
 
@@ -13,23 +12,25 @@ class JobListResponse(BaseModel):
     company: str
     location: str | None
     source: str
-    score: float
+
+    raw_score: float
+    score: int
+
+    score_breakdown: dict[str, int] | None = None
+
     score_details: list[dict[str, Any]] | None = None
+
     url: str
     created_at: datetime
-    
-    model_config = {
-        "from_attributes": True
-    }
+
 
 class JobDetailsResponse(JobListResponse):
     description: str | None
 
-from math import ceil
-
 
 class JobPageResponse(BaseModel):
     items: list[JobListResponse]
+
     total: int
     page: int
     size: int

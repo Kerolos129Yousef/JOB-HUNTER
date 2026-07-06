@@ -1,24 +1,18 @@
-import re
-
-from app.matcher.aliases import ALIASES
+from math import exp
 
 
-class TextNormalizer:
+class ScoreNormalizer:
 
-    _patterns = [
-        (
-            re.compile(rf"\b{re.escape(alias)}\b"),
-            canonical,
-        )
-        for canonical, aliases in ALIASES.items()
-        for alias in aliases
-    ]
+    MIDPOINT = 120
+    STEEPNESS = 0.025
 
     @classmethod
-    def normalize(cls, text: str) -> str:
-        text = text.lower()
+    def normalize(cls, raw_score: float) -> int:
+        """
+        Convert raw score to a value between 0 and 100.
+        """
+        normalized = 100 / (
+            1 + exp(-cls.STEEPNESS * (raw_score - cls.MIDPOINT))
+        )
 
-        for pattern, canonical in cls._patterns:
-            text = pattern.sub(canonical, text)
-
-        return text
+        return round(normalized)

@@ -1,3 +1,4 @@
+from app.matcher.normalizer import ScoreNormalizer
 from app.matcher.preferences import load_preferences
 from app.matcher.preferences.base import BasePreference
 from app.schemas.job import JobSchema
@@ -41,8 +42,12 @@ class JobScorer:
             preference.apply(job, result)
 
 
-        result.score = max(result.score, 0)
+        raw_score = max(result.score, 0)
 
+        result.raw_score = raw_score
+        result.score = ScoreNormalizer.normalize(raw_score)
 
         return result
+
+            
     
