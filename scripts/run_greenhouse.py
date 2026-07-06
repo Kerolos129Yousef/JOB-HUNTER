@@ -1,13 +1,14 @@
 import asyncio
-
 from app.collectors.collectorsManager import CollectorManager
 from app.db.session import SessionLocal
 from app.services.job_repository import JobRepository
+from app.matcher.scoring import JobScorer
 
 
 async def main():
     db = SessionLocal()
     repo = JobRepository(db)
+    scorer = JobScorer()
 
     manager = CollectorManager()
 
@@ -28,6 +29,14 @@ async def main():
             print(f"Found {len(jobs)} jobs")
 
             for job in jobs:
+                score_result = scorer.score(job)
+
+                job.score = score_result.score
+                job.score_details = [match.dict() for match in score_result.matches]
+                job.score_details = [
+                        match.model_dump()
+                        for match in score_result.matches
+                ]
                 _, is_created = repo.upsert(job)
 
                 if is_created:

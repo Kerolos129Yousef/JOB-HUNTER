@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.db.models import Job
+from app.schemas import job
 from app.schemas.job import JobSchema
 
 
@@ -29,6 +30,8 @@ class JobRepository:
             existing.location = job.location
             existing.description = job.description
             existing.source = job.source
+            existing.score = job.score
+            existing.score_details = job.score_details
 
             self.db.commit()
             self.db.refresh(existing)
@@ -42,6 +45,8 @@ class JobRepository:
             description=job.description,
             url=job.url,
             source=job.source,
+            score=job.score,
+            score_details=job.score_details,
         )
 
         self.db.add(new_job)

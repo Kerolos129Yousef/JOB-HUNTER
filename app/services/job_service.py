@@ -11,6 +11,7 @@ class JobService:
     def get_jobs(self, filters: JobFilter):
         page = filters.page
         size = filters.size
+        offset = (page - 1) * size
         q = filters.q
         company = filters.company
         location = filters.location

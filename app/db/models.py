@@ -3,7 +3,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
 from app.db.base import Base
-
+from sqlalchemy import JSON
+from typing import Any
 
 class Job(Base):
     __tablename__ = "jobs"
@@ -23,5 +24,11 @@ class Job(Base):
     source: Mapped[str]
 
     score: Mapped[float] = mapped_column(default=0)
+
+    
+    score_details: Mapped[list[dict[str, Any]] | None] = mapped_column(
+    JSON,
+    nullable=True,
+    )
 
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
